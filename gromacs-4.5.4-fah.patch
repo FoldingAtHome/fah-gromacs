@@ -1,0 +1,149 @@
+diff -aur gromacs-4.5.4.orig/src/gmxlib/checkpoint.c gromacs-4.5.4/src/gmxlib/checkpoint.c
+--- gromacs-4.5.4/src/gmxlib/checkpoint.c	2011-03-15 05:44:30.000000000 -0700
++++ gromacs-4.5.4/src/gmxlib/checkpoint.c	2011-07-18 14:02:28.000000000 -0700
+@@ -56,7 +56,12 @@
+ #include <fcntl.h>
+ 
+ 
+-#ifdef GMX_FAHCORE
++#if GMX_FAHCORE == 2
++#ifdef BOOL
++#undef BOOL
++#endif
++#include <fah/checksum/redefines.h>
++#elif defined GMX_FAHCORE
+ #include "corewrap.h"
+ #endif
+ 
+@@ -1331,8 +1336,10 @@
+     sfree(outputfiles);
+     sfree(fntemp);
+ 
+-#ifdef GMX_FAHCORE
+-    /*code for alternate checkpointing scheme.  moved from top of loop over 
++#if GMX_FAHCORE == 2
++    // TODO Add checkpointing call
++#elif defined(GMX_FAHCORE)
++    /*code for alternate checkpointing scheme.  moved from top of loop over
+       steps */
+     fcRequestCheckPoint();
+     if ( fcCheckPointParallel( cr->nodeid, NULL,0) == 0 ) {
+diff -aur gromacs-4.5.4.orig/src/gmxlib/futil.c gromacs-4.5.4/src/gmxlib/futil.c
+--- gromacs-4.5.4/src/gmxlib/futil.c	2011-03-15 05:44:30.000000000 -0700
++++ gromacs-4.5.4/src/gmxlib/futil.c	2011-07-18 14:00:11.000000000 -0700
+@@ -73,6 +73,10 @@
+ #include "windows.h"
+ #endif
+ 
++#if GMX_FAHCORE == 2
++#include <fah/checksum/redefines.h>
++#endif
++
+ /* we keep a linked list of all files opened through pipes (i.e. 
+    compressed or .gzipped files. This way we can distinguish between them
+    without having to change the semantics of reading from/writing to files) 
+@@ -1077,7 +1081,7 @@
+ {
+     int rc=0;
+ 
+-#ifdef GMX_FAHCORE
++#if defined(GMX_FAHCORE) && GMX_FAHCORE != 2
+     /* the fahcore defines its own os-independent fsync */
+     rc=fah_fsync(fp);
+ #else /* GMX_FAHCORE */
+diff -aur gromacs-4.5.4.orig/src/gmxlib/gmxfio_bin.c gromacs-4.5.4/src/gmxlib/gmxfio_bin.c
+--- gromacs-4.5.4/src/gmxlib/gmxfio_bin.c	2011-03-15 05:44:31.000000000 -0700
++++ gromacs-4.5.4/src/gmxlib/gmxfio_bin.c	2011-07-18 14:00:11.000000000 -0700
+@@ -59,6 +59,10 @@
+ 
+ #include "gmxfio_int.h"
+ 
++#if GMX_FAHCORE == 2
++#include <fah/checksum/redefines.h>
++#endif
++
+ /* This is the part that reads dummy and ascii files.  */
+ 
+ 
+diff -aur gromacs-4.5.4.orig/src/gmxlib/gmx_system_xdr.c gromacs-4.5.4/src/gmxlib/gmx_system_xdr.c
+--- gromacs-4.5.4/src/gmxlib/gmx_system_xdr.c	2011-03-15 05:44:30.000000000 -0700
++++ gromacs-4.5.4/src/gmxlib/gmx_system_xdr.c	2011-07-18 14:00:11.000000000 -0700
+@@ -45,6 +45,10 @@
+ 
+ #include "gmx_system_xdr.h"
+ 
++#if GMX_FAHCORE == 2
++#include <fah/checksum/redefines.h>
++#endif
++
+ 
+ /* NB - THIS FILE IS ONLY USED ON MICROSOFT WINDOWS, since that
+  * system doesn't provide any standard XDR system libraries. It will
+diff -aur gromacs-4.5.4.orig/src/gmxlib/selection/scanner.c gromacs-4.5.4/src/gmxlib/selection/scanner.c
+--- gromacs-4.5.4/src/gmxlib/selection/scanner.c	2011-03-15 05:44:32.000000000 -0700
++++ gromacs-4.5.4/src/gmxlib/selection/scanner.c	2011-07-18 14:00:11.000000000 -0700
+@@ -29,9 +29,7 @@
+ #ifndef FLEXINT_H
+ #define FLEXINT_H
+ 
+-/* C99 systems have <inttypes.h>. Non-C99 systems may or may not. */
+-
+-#if defined (__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
++#ifdef HAVE_INTTYPES_H
+ 
+ /* C99 says to define __STDC_LIMIT_MACROS before including stdint.h,
+  * if you want the limit (max/min) macros for int types. 
+@@ -84,7 +82,7 @@
+ #define UINT32_MAX             (4294967295U)
+ #endif
+ 
+-#endif /* ! C99 */
++#endif /* ! HAVE_INTTYPES_H */
+ 
+ #endif /* ! FLEXINT_H */
+ 
+diff -aur gromacs-4.5.4.orig/src/gmxlib/selection/scanner_flex.h gromacs-4.5.4/src/gmxlib/selection/scanner_flex.h
+--- gromacs-4.5.4/src/gmxlib/selection/scanner_flex.h	2011-03-15 05:44:32.000000000 -0700
++++ gromacs-4.5.4/src/gmxlib/selection/scanner_flex.h	2011-07-18 14:00:11.000000000 -0700
+@@ -33,9 +33,7 @@
+ #ifndef FLEXINT_H
+ #define FLEXINT_H
+ 
+-/* C99 systems have <inttypes.h>. Non-C99 systems may or may not. */
+-
+-#if defined (__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
++#ifdef HAVE_INTTYPES_H
+ 
+ /* C99 says to define __STDC_LIMIT_MACROS before including stdint.h,
+  * if you want the limit (max/min) macros for int types. 
+@@ -88,7 +86,7 @@
+ #define UINT32_MAX             (4294967295U)
+ #endif
+ 
+-#endif /* ! C99 */
++#endif /* ! HAVE_INTTYPES_H */
+ 
+ #endif /* ! FLEXINT_H */
+ 
+diff -aur gromacs-4.5.4.orig/src/gmxlib/shift_util.c gromacs-4.5.4/src/gmxlib/shift_util.c
+--- gromacs-4.5.4/src/gmxlib/shift_util.c	2011-03-15 05:44:32.000000000 -0700
++++ gromacs-4.5.4/src/gmxlib/shift_util.c	2011-07-18 14:00:11.000000000 -0700
+@@ -38,6 +38,9 @@
+ 
+ #include <stdio.h>
+ #include <math.h>
++
++#include "thread_mpi.h"
++
+ #include "typedefs.h"
+ #include "vec.h"
+ #include "coulomb.h"
+@@ -52,8 +55,6 @@
+ #include "pppm.h"
+ #include "gmxfio.h"
+ 
+-#include "thread_mpi.h"
+-
+ #define p2(x) ((x)*(x))
+ #define p3(x) ((x)*(x)*(x)) 
+ #define p4(x) ((x)*(x)*(x)*(x)) 

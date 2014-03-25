@@ -22,7 +22,10 @@ patches = ['gromacs-4.5.4-fah.patch']
 
 
 # Setup
-env.CBLoadTools('compiler gromacs libfah')
+env.CBLoadTools('compiler gromacs')
+try:
+    env.CBLoadTools('libfah')
+except: pass
 conf = env.CBConfigure()
 env.__setitem__('strict', 0) # Force not strict
 
@@ -217,7 +220,7 @@ if not env.GetOption('clean'):
         env.CBDefine('GMX_INTERNAL_XDR')
 
     # libfah
-    conf.CBConfig('libfah')
+    if env.get('fah', 0): conf.CBConfig('libfah')
 
     # Pipes
     conf.AddTest('CheckPipes', CheckPipes)
@@ -251,21 +254,22 @@ for name, subdirs in libs.items():
     Default(env.Library(name + '_d', src))
 
     # Find FAH source files
-    fahSrc = []
-    nonFAHSrc = []
-    for path in src:
-        f = None
-        try:
-            f = open(path)
-            if f.read().find('GMX_FAHCORE') != -1: fahSrc += [path]
-            else: nonFAHSrc += [path]
-        finally:
-            if f is not None: f.close()
+    if env.get('fah', 0):
+        fahSrc = []
+        nonFAHSrc = []
+        for path in src:
+            f = None
+            try:
+                f = open(path)
+                if f.read().find('GMX_FAHCORE') != -1: fahSrc += [path]
+                else: nonFAHSrc += [path]
+            finally:
+                if f is not None: f.close()
 
-    # Build FAH lib
-    fahObjs = []
-    for path in fahSrc:
-        fahObjs += [env.StaticObject(path, OBJPREFIX = 'fah-',
-                                     CCFLAGS = '$CFLAGS -DGMX_FAHCORE=2')]
+        # Build FAH lib
+        fahObjs = []
+        for path in fahSrc:
+            fahObjs += [env.StaticObject(path, OBJPREFIX = 'fah-',
+                                         CCFLAGS = '$CFLAGS -DGMX_FAHCORE=2')]
 
-    Default(env.Library(name + '-fah', nonFAHSrc + fahObjs))
+        Default(env.Library(name + '-fah', nonFAHSrc + fahObjs))
