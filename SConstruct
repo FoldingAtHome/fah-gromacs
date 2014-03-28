@@ -22,7 +22,7 @@ patches = ['gromacs-4.5.4-fah.patch']
 
 
 # Setup
-env.CBLoadTools('compiler gromacs')
+env.CBLoadTools('compiler fah-gromacs')
 try:
     env.CBLoadTools('libfah')
 except: pass
@@ -190,7 +190,7 @@ if not env.GetOption('clean'):
             env.CBDefine('HAVE_' + func.upper())
 
     # Other dependencies
-    conf.CBConfig('gromacs-deps')
+    conf.CBConfig('fah-gromacs-deps')
 
     # Defines
     import socket

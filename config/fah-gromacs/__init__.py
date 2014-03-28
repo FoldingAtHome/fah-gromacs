@@ -5,7 +5,7 @@ import sys
 def configure_deps(conf):
     env = conf.env
 
-    conf.CBCheckHome('gromacs', inc_suffix = '', lib_suffix = '')
+    conf.CBCheckHome('fah-gromacs', inc_suffix = '', lib_suffix = '')
 
     # Libraries
     for lib in ['nsl', 'm', 'pthread', 'gsl']:
@@ -49,7 +49,7 @@ def configure(conf):
         except: pass
 
     # Else try manual configuration
-    if not found: conf.CBConfig('gromacs-deps')
+    if not found: conf.CBConfig('fah-gromacs-deps')
 
     # Check for Gromacs libraries
     for lib in ['gmx', 'md']:
@@ -63,8 +63,8 @@ def configure(conf):
 
 
 def generate(env):
-    env.CBAddConfigTest('gromacs', configure)
-    env.CBAddConfigTest('gromacs-deps', configure_deps)
+    env.CBAddConfigTest('fah-gromacs', configure)
+    env.CBAddConfigTest('fah-gromacs-deps', configure_deps)
     env.CBLoadTools('mkl')
     env.CBAddVariables(
         BoolVariable('fah', 'Set to 1 to build for Folding@home', 0))
