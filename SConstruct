@@ -213,7 +213,8 @@ if not env.GetOption('clean'):
     defines = filter(lambda d: not d.startswith('DEBUG'), flatten(defines))
     env.Replace(CPPDEFINES = defines)
 
-    if env['PLATFORM'] == 'win32': env.CBDefine('RETSIGTYPE=int')
+    if env['PLATFORM'] == 'win32' or int(env.get('cross_mingw', 0)):
+        env.CBDefine('RETSIGTYPE=int')
     else: env.CBDefine('RETSIGTYPE=void')
 
     # XDR
@@ -228,7 +229,8 @@ if not env.GetOption('clean'):
     conf.CheckPipes()
 
     # Windows
-    if env['PLATFORM'] == 'win32': env.CBDefine('uid_t=int')
+    if env['PLATFORM'] == 'win32' or int(env.get('cross_mingw', 0)):
+        env.CBDefine('uid_t=int')
 
 # Local includes
 env.Append(CPPPATH = [package_root + '/include'])
