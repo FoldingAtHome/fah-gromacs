@@ -76,7 +76,7 @@ def extract(package):
     return do_tar(package, True)
 
 
-def get_tar_root(filename):
+def get_tar_root(package):
     return do_tar(package, False)
 
 
@@ -178,6 +178,7 @@ if not env.GetOption('clean'):
         'sched', 'unistd', 'pthread', 'pwd', 'io', 'inttypes',
         ]
 
+    if int(env.get('cross_mingw', 0)): headers.remove('dirent')
 
     # Headers
     for hdr in headers:
@@ -204,7 +205,7 @@ if not env.GetOption('clean'):
             'BUILD_USER="\\"%s@%s\\""' % (getpass.getuser(),
                                           socket.gethostname()),
             'BUILD_MACHINE="\\"%s\\""' % platform.platform(),
-            'GMX_DOUBLE',
+            'GMX_DOUBLE', 'GMX_NO_NICE'
             ])
 
     # Remove DEBUG define (Causes Gromacs compile failure in 4.5.4+)

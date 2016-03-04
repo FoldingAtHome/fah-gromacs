@@ -5,13 +5,13 @@
 /* #undef AC_APPLE_UNIVERSAL_BUILD */
 
 /* Hardware and OS version for build host */
-#define BUILD_MACHINE "Linux 2.6.38-8-server x86_64"
+#define BUILD_MACHINE "Unknown"
 
 /* Date and time for build */
-#define BUILD_TIME "Thu May 19 16:09:14 PDT 2011"
+#define BUILD_TIME "Unknown"
 
 /* User doing build */
-#define BUILD_USER "jcoffland@slick"
+#define BUILD_USER "joseph@cauldrondevelopment.com"
 
 /* Turn off water-water neighborlist optimization only */
 /* #undef DISABLE_WATERWATER_NLIST */
@@ -173,7 +173,7 @@
 /* #undef HAVE_DIRECT_H */
 
 /* Define to 1 if you have the <dirent.h> header file. */
-#define HAVE_DIRENT_H 1
+/* #undef HAVE_DIRENT_H */
 
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #define HAVE_DLFCN_H 1
