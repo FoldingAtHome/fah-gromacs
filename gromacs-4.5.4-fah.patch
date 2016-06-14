@@ -1,18 +1,7 @@
 diff -aur gromacs-4.5.4.orig/src/gmxlib/checkpoint.c gromacs-4.5.4/src/gmxlib/checkpoint.c
 --- gromacs-4.5.4/src/gmxlib/checkpoint.c	2011-03-15 05:44:30.000000000 -0700
-+++ gromacs-4.5.4/src/gmxlib/checkpoint.c	2016-06-14 16:50:28.000000000 -0700
-@@ -27,6 +27,10 @@
- #include <string.h>
- #include <time.h>
- 
-+#ifdef HAVE_UNISTD_H
-+#include <unistd.h>
-+#endif
-+
- #ifdef HAVE_SYS_TIME_H
- #include <sys/time.h>
- #endif
-@@ -56,7 +60,12 @@
++++ gromacs-4.5.4/src/gmxlib/checkpoint.c	2016-06-14 16:57:03.000000000 -0700
+@@ -56,7 +56,12 @@
  #include <fcntl.h>
  
  
@@ -26,7 +15,7 @@ diff -aur gromacs-4.5.4.orig/src/gmxlib/checkpoint.c gromacs-4.5.4/src/gmxlib/ch
  #include "corewrap.h"
  #endif
  
-@@ -1331,8 +1340,10 @@
+@@ -1331,8 +1336,10 @@
      sfree(outputfiles);
      sfree(fntemp);
  
@@ -90,20 +79,6 @@ diff -aur gromacs-4.5.4.orig/src/gmxlib/gmx_system_xdr.c gromacs-4.5.4/src/gmxli
  
  /* NB - THIS FILE IS ONLY USED ON MICROSOFT WINDOWS, since that
   * system doesn't provide any standard XDR system libraries. It will
-diff -aur gromacs-4.5.4.orig/src/gmxlib/main.c gromacs-4.5.4/src/gmxlib/main.c
---- gromacs-4.5.4/src/gmxlib/main.c	2011-03-21 01:35:27.000000000 -0700
-+++ gromacs-4.5.4/src/gmxlib/main.c	2016-06-14 16:51:07.000000000 -0700
-@@ -52,6 +52,10 @@
- #include <direct.h>
- #endif
- 
-+#ifdef HAVE_UNISTD_H
-+#include <unistd.h>
-+#endif
-+
- 
- #include "smalloc.h"
- #include "gmx_fatal.h"
 diff -aur gromacs-4.5.4.orig/src/gmxlib/selection/scanner.c gromacs-4.5.4/src/gmxlib/selection/scanner.c
 --- gromacs-4.5.4/src/gmxlib/selection/scanner.c	2011-03-15 05:44:32.000000000 -0700
 +++ gromacs-4.5.4/src/gmxlib/selection/scanner.c	2014-03-24 19:10:10.000000000 -0700
