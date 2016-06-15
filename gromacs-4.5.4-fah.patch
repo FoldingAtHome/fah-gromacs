@@ -1,6 +1,6 @@
 diff -aur gromacs-4.5.4.orig/src/gmxlib/checkpoint.c gromacs-4.5.4/src/gmxlib/checkpoint.c
 --- gromacs-4.5.4/src/gmxlib/checkpoint.c	2011-03-15 05:44:30.000000000 -0700
-+++ gromacs-4.5.4/src/gmxlib/checkpoint.c	2016-06-14 16:57:03.000000000 -0700
++++ gromacs-4.5.4/src/gmxlib/checkpoint.c	2016-06-14 17:00:08.000000000 -0700
 @@ -56,7 +56,12 @@
  #include <fcntl.h>
  
@@ -15,7 +15,22 @@ diff -aur gromacs-4.5.4.orig/src/gmxlib/checkpoint.c gromacs-4.5.4/src/gmxlib/ch
  #include "corewrap.h"
  #endif
  
-@@ -1331,8 +1336,10 @@
+@@ -722,14 +727,7 @@
+     if (!bRead)
+     {
+         snew(fhost,255);
+-#ifdef HAVE_UNISTD_H
+-        if (gethostname(fhost,255) != 0)
+-        {
+-            sprintf(fhost,"unknown");
+-        }
+-#else
+         sprintf(fhost,"unknown");
+-#endif  
+     }
+     do_cpt_string_err(xd,bRead,"GROMACS version"           ,version,list);
+     do_cpt_string_err(xd,bRead,"GROMACS build time"        ,btime,list);
+@@ -1331,8 +1329,10 @@
      sfree(outputfiles);
      sfree(fntemp);
  
@@ -79,6 +94,24 @@ diff -aur gromacs-4.5.4.orig/src/gmxlib/gmx_system_xdr.c gromacs-4.5.4/src/gmxli
  
  /* NB - THIS FILE IS ONLY USED ON MICROSOFT WINDOWS, since that
   * system doesn't provide any standard XDR system libraries. It will
+diff -aur gromacs-4.5.4.orig/src/gmxlib/main.c gromacs-4.5.4/src/gmxlib/main.c
+--- gromacs-4.5.4/src/gmxlib/main.c	2011-03-21 01:35:27.000000000 -0700
++++ gromacs-4.5.4/src/gmxlib/main.c	2016-06-14 17:00:26.000000000 -0700
+@@ -315,14 +315,7 @@
+     gmx_fatal_set_log_file(fp);
+   
+     /* Get some machine parameters */
+-#ifdef HAVE_UNISTD_H
+-    if (gethostname(host,255) != 0)
+-    {
+-        sprintf(host,"unknown");
+-    }
+-#else
+     sprintf(host,"unknown");
+-#endif  
+ 
+     time(&t);
+ 
 diff -aur gromacs-4.5.4.orig/src/gmxlib/selection/scanner.c gromacs-4.5.4/src/gmxlib/selection/scanner.c
 --- gromacs-4.5.4/src/gmxlib/selection/scanner.c	2011-03-15 05:44:32.000000000 -0700
 +++ gromacs-4.5.4/src/gmxlib/selection/scanner.c	2014-03-24 19:10:10.000000000 -0700
